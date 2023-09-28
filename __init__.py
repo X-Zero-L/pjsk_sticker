@@ -80,7 +80,7 @@ async def random_stick(bot, ev: CQEvent):
                 await bot.send(ev,f"角色{chara}不存在")
                 return
         try:
-            text = filt_message("".join(info[:])).replace("*", "")
+            text = "".join(info[:])
         except TypeError:
             await bot.send(ev,"传入文本错误")
             return
@@ -115,7 +115,7 @@ async def make_stick(bot, ev: CQEvent):
                 await bot.send(ev,"贴纸序号错误,应为正整数")
                 return
             try:
-                text = filt_message("".join(info[2:])).replace("*","")
+                text = "".join(info[2:])
             except TypeError:
                 await bot.send(ev,"传入文本错误")
                 return
