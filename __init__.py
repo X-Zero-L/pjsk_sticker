@@ -65,59 +65,53 @@ async def characters_name(bot, ev: CQEvent):
 @sv.on_prefix('随机')
 async def random_stick(bot, ev: CQEvent):
     try:
+        number = 4 # 每次出4张
         info = ev.message.extract_plain_text().strip().split()
-        #info0 = [x for x in info if x]
-        chara=random.randint(1,26)
-        choices = [i for i in range(1, 20) if i % 5 != 0]
-        while True:
-            chara_id = random.choice(choices)
-            chara_id = f"0{str(chara_id)}" if 0<chara_id<=9 else str(chara_id)
-            if chara_name := await check_chara(f"{chara}"):
-                name = f'{chara_name} {chara_id}'
-                await asyncio.sleep(1)
-                if await check_name(name):
-                    break
-            else:
-                await bot.send(ev,f"角色{chara}不存在")
-                return
-        try:
-            text = "".join(info[:])
-        except TypeError:
-            await bot.send(ev,"传入文本错误")
-            return
-        except Exception as e:
-            await bot.send(ev,"参数错误，应为[pss 角色名 贴纸序号 任意文本]")
-            return
-        if img := await stick_maker(str(chara),chara_id,text):
-            await bot.send(ev,img)
-        else:
-            await bot.send(ev,"贴纸生成失败",at_sender=True)
-        return
+        chara_list = random.sample(range(1,27),number)
+        for i in range(len(chara_list)):
+            chara = chara_list[i]
+            chara_id = await get_random_chara(chara)
+            chara_list[i] = [chara,chara_id]   
+        text = "".join(info[:])
+        imgs = []
+        for chara,chara_id in chara_list:
+            if img := await stick_maker(str(chara),chara_id,text):
+                imgs.append(img)
+        await bot.send(ev, "".join(imgs))
     except Exception as e:
-        await bot.send(ev, "贴纸生成失败", at_sender=True)
         logger.error(e)
-        return
+
+async def get_random_chara(chara):
+    choices = [i for i in range(1, 20) if i % 5 != 0]
+    while True:
+        chara_id = random.choice(choices)
+        chara_id = f"0{str(chara_id)}" if 0<chara_id<=9 else str(chara_id)
+        if chara_name := await check_chara(f"{chara}"):
+            name = f'{chara_name} {chara_id}'
+            await asyncio.sleep(1)
+            if await check_name(name):
+                break
+    return chara_id
 
 @sv.on_message('group')
 async def ai_msg(bot, ev: CQEvent):
     info = ev['raw_message']
     pattern = re.compile(r'^[唉哎哇][,，.!！].*')
     if pattern.match(info):
+        number = 4 # 每次出4张
         try:
             info = info.strip().split()
-            chara=random.randint(1,26)
-            choices = [i for i in range(1, 20) if i % 5 != 0]
-            while True:
-                chara_id = random.choice(choices)
-                chara_id = f"0{str(chara_id)}" if 0<chara_id<=9 else str(chara_id)
-                if chara_name := await check_chara(f"{chara}"):
-                    name = f'{chara_name} {chara_id}'
-                    await asyncio.sleep(1)
-                    if await check_name(name):
-                        break
+            chara_list = random.sample(range(1,27),number)
+            for i in range(len(chara_list)):
+                chara = chara_list[i]
+                chara_id = await get_random_chara(chara)
+                chara_list[i] = [chara,chara_id]   
             text = "".join(info[:])
-            if img := await stick_maker(str(chara),chara_id,text):
-                await bot.send(ev,img)
+            imgs = []
+            for chara,chara_id in chara_list:
+                if img := await stick_maker(str(chara),chara_id,text):
+                    imgs.append(img)
+            await bot.send(ev, "".join(imgs))
         except Exception as e:
             logger.error(e)
     
