@@ -115,7 +115,7 @@ async def ai_msg(bot, ev: CQEvent):
                     await asyncio.sleep(1)
                     if await check_name(name):
                         break
-                text = "".join(info[:])
+            text = "".join(info[:])
             if img := await stick_maker(str(chara),chara_id,text):
                 await bot.send(ev,img)
         except Exception as e:
