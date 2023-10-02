@@ -98,7 +98,7 @@ async def ai_msg(bot, ev: CQEvent):
     info = ev['raw_message']
     pattern = re.compile(r'^[咦唉哎哇嗨嘿][,，.!！].*')
     if pattern.match(info):
-        number = 4 # 每次出4张
+        number = 1 # 每次出1张
         try:
             info = info.strip().split()
             chara_list = random.sample(range(1,27),number)
