@@ -96,7 +96,7 @@ async def get_random_chara(chara):
 @sv.on_message('group')
 async def ai_msg(bot, ev: CQEvent):
     info = ev['raw_message']
-    pattern = re.compile(r'^[唉哎哇][,，.!！].*')
+    pattern = re.compile(r'^[唉哎哇嗨嘿][,，.!！].*')
     if pattern.match(info):
         number = 4 # 每次出4张
         try:
