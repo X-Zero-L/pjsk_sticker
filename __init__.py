@@ -6,6 +6,7 @@ from hoshino.util import filt_message
 from .chara import check_chara,all_chara,check_name
 from .pic import stick_maker
 import os
+import re
 
 PLUGIN_PATH = os.path.dirname(__file__)
 sv_help = '''
@@ -96,6 +97,30 @@ async def random_stick(bot, ev: CQEvent):
         await bot.send(ev, "贴纸生成失败", at_sender=True)
         logger.error(e)
         return
+
+@sv.on_message('group')
+async def ai_msg(bot, ev: CQEvent):
+    info = ev['raw_message']
+    pattern = re.compile(r'^[唉哎哇][,，.!！].*')
+    if pattern.match(info):
+        try:
+            info = info.strip().split()
+            chara=random.randint(1,26)
+            choices = [i for i in range(1, 20) if i % 5 != 0]
+            while True:
+                chara_id = random.choice(choices)
+                chara_id = f"0{str(chara_id)}" if 0<chara_id<=9 else str(chara_id)
+                if chara_name := await check_chara(f"{chara}"):
+                    name = f'{chara_name} {chara_id}'
+                    await asyncio.sleep(1)
+                    if await check_name(name):
+                        break
+                text = "".join(info[:])
+            if img := await stick_maker(str(chara),chara_id,text):
+                await bot.send(ev,img)
+        except Exception as e:
+            logger.error(e)
+    
 
 @sv.on_prefix('pss')
 async def make_stick(bot, ev: CQEvent):
