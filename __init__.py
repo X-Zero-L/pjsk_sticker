@@ -95,12 +95,11 @@ async def get_random_chara(chara):
 
 @sv.on_message('group')
 async def ai_msg(bot, ev: CQEvent):
-    info = ev['raw_message']
+    info = ev['raw_message'].strip()
     pattern = re.compile(r'^[咦唉哎哇嗨嘿][,，.!！].*')
-    if pattern.match(info):
+    if pattern.match(info) and len(info) <= 6:
         number = 1 # 每次出1张
         try:
-            info = info.strip().split()
             chara_list = random.sample(range(1,27),number)
             for i in range(len(chara_list)):
                 chara = chara_list[i]
